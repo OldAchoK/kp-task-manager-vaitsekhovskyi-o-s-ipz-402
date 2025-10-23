@@ -1,0 +1,10 @@
+Row-Level-Security
+####Guest creats No Commerce
+View of Clients email
+Completing task is Updeate operation witjh additional Medialinks and changed Status
+Create View of Productivity of User (Completed, Failed, Time to complete)
+ON Client Invite to TASK send message to Client
+ON TASK Cancel send message to Developers with REASON
+ON Client Invite to EVENT send message to Client
+ON EVENT Cancel send message to Members with REASON
+ON Client change Role send Message
