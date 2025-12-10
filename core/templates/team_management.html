@@ -1,0 +1,110 @@
+{% if role in 'Lead Manager' %}
+<div class="row mt-5">
+    <div class="col-md-6">
+        <h5 class="mb-3"><i class="bi bi-people-fill"></i> Команди</h5>
+        <div class="list-group shadow-sm">
+            {% for team in teams %}
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>{{ team.title }}</strong>
+                    <div class="text-muted small">{{ team.description|truncatewords:5 }}</div>
+                </div>
+                <div>
+                    <button class="btn btn-sm btn-outline-primary" onclick="openManageTeamModal({{ team.teamid }})">
+                        <i class="bi bi-gear"></i>
+                    </button>
+                    {% if role == 'Lead' %}
+                    <form action="{% url 'delete_team' %}" method="POST" style="display:inline;"
+                          onsubmit="return confirm('Видалити команду?');">
+                        {% csrf_token %}
+                        <input type="hidden" name="team_id" value="{{ team.teamid }}">
+                        <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+            {% empty %}
+            <div class="list-group-item text-muted">Немає команд</div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <h5 class="mb-3"><i class="bi bi-folder-fill"></i> Проекти</h5>
+        <div class="list-group shadow-sm">
+            {% for project in projects %}
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>{{ project.title }}</strong>
+                    <span class="badge bg-secondary ms-1">{{ project.status }}</span>
+                </div>
+                <div>
+                    <button class="btn btn-sm btn-outline-primary"
+                            onclick="openManageProjectModal({{ project.projectid }})">
+                        <i class="bi bi-gear"></i>
+                    </button>
+
+                    {% if role == 'Lead' %}
+                    <button class="btn btn-sm btn-outline-danger"
+                            onclick="confirmDeleteProject({{ project.projectid }})">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+            {% empty %}
+            <div class="list-group-item text-muted">Немає проектів</div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<form id="deleteProjectForm" action="{% url 'delete_project' %}" method="POST" style="display:none;">
+    {% csrf_token %}
+    <input type="hidden" name="project_id" id="delete_proj_id">
+</form>
+
+{% if role == 'Lead' %}
+<div class="row mt-5">
+    <div class="col-12">
+        <h6 class="mb-3">Всі користувачі системи</h6>
+        <table class="table table-striped bg-white shadow-sm rounded">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Ім'я</th>
+                <th>Email</th>
+                <th>Роль</th>
+                <th>Дії</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for member in team_members %}
+            <tr>
+                <td>{{ member.clientid }}</td>
+                <td>{{ member.name }} {{ member.surname }}</td>
+                <td>{{ member.email }}</td>
+                <td><span class="badge bg-secondary">{{ member.role }}</span></td>
+                <td>
+                    {% if member.clientid != user.clientid %}
+                    <button class="btn btn-sm btn-warning"
+                            onclick="openChangeRoleModal({{ member.clientid }}, '{{ member.role }}')">
+                        <i class="bi bi-arrow-repeat"></i>
+                    </button>
+                    <form action="{% url 'delete_user' %}" method="POST" style="display:inline;"
+                          onsubmit="return confirm('Видалити користувача?');">
+                        {% csrf_token %}
+                        <input type="hidden" name="user_id" value="{{ member.clientid }}">
+                        <button class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
+                    </form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+
+{% endif %}

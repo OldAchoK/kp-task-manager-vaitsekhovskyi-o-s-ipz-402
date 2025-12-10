@@ -1,0 +1,77 @@
+<div class="modal fade" id="createTeamModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form action="{% url 'create_team' %}" method="POST">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title">Нова команда</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    {{ forms.team.as_p }}
+                    <div class="mb-3">
+                        <label class="form-label d-block">Початкові члени команди</label>
+                        <div style="max-height: 200px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 4px; padding: 10px;">
+                            {% for client in team_members %}
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="members"
+                                       value="{{ client.clientid }}" id="member_{{ client.clientid }}">
+                                <label class="form-check-label" for="member_{{ client.clientid }}">
+                                    {{ client.name }} {{ client.surname }} ({{ client.role }})
+                                </label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-secondary">Створити</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="manageTeamModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Управління командою</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <h6 class="mb-3">Склад команди</h6>
+                <div class="table-responsive mb-4">
+                    <table class="table table-bordered table-sm">
+                        <thead class="table-light">
+                        <tr>
+                            <th>Ім'я</th>
+                            <th>Роль</th>
+                            <th style="width: 50px;">Дія</th>
+                        </tr>
+                        </thead>
+                        <tbody id="team_members_table_body">
+                        </tbody>
+                    </table>
+                </div>
+
+                <hr>
+                <h6 class="mb-3">Додати нового члена</h6>
+                <form action="{% url 'add_team_member' %}" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="team_id" id="add_member_team_id">
+                    <div class="input-group">
+                        <select name="user_id" class="form-select">
+                            {% for client in team_members %}
+                            <option value="{{ client.clientid }}">
+                                {{ client.name }} {{ client.surname }} ({{ client.role }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" class="btn btn-success">Додати</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

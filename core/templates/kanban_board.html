@@ -1,0 +1,21 @@
+<h5 class="mb-3"><i class="bi bi-kanban-fill"></i> Канбан-дошка завдань</h5>
+<div class="row mb-4">
+    {% for status_key, status_label in forms.status.fields.status.choices %}
+    <div class="col-md">
+        <h6 class="text-center fw-bold">{{ status_label }}</h6>
+        <div class="kanban-col" id="col-{{ status_key }}" ondrop="drop(event, '{{ status_key }}')" ondragover="allowDrop(event)">
+            {% for task in tasks %}
+            {% if task.status == status_key %}
+            {% include 'task_card.html' %}
+            {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<form id="updateStatusForm" action="{% url 'update_task' %}" method="POST" style="display:none;">
+    {% csrf_token %}
+    <input type="hidden" name="task_id" id="dd_task_id">
+    <input type="hidden" name="status" id="dd_status">
+</form>

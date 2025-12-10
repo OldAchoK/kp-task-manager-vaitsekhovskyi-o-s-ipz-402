@@ -1,0 +1,55 @@
+<div class="modal fade" id="addUserModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="{% url 'add_user' %}" method="POST">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title">Новий користувач</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3"><label>Ім'я</label><input type="text" name="name" class="form-control" required></div>
+                    <div class="mb-3"><label>Прізвище</label><input type="text" name="surname" class="form-control" required></div>
+                    <div class="mb-3"><label>Email</label><input type="email" name="email" class="form-control" required></div>
+                    <div class="mb-3"><label>Пароль</label><input type="password" name="password" class="form-control" required></div>
+                    <div class="mb-3"><label>Роль</label><select name="role" class="form-select">
+                        <option value="Developer">Developer</option>
+                        <option value="Manager">Manager</option>
+                        <option value="Lead">Lead</option>
+                        <option value="Individual">Individual</option>
+                    </select></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-warning">Додати</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="changeRoleModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="{% url 'change_user_role' %}" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="user_id" id="change_role_user_id">
+                <div class="modal-header">
+                    <h5 class="modal-title">Зміна ролі</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <label>Нова роль</label>
+                    <select name="role" id="change_role_select" class="form-select">
+                        <option value="Developer">Developer</option>
+                        <option value="Manager">Manager</option>
+                        <option value="Lead">Lead</option>
+                        <option value="Individual">Individual</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-warning">Змінити</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

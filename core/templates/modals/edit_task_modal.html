@@ -1,0 +1,40 @@
+<div class="modal fade" id="editTaskModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="{% url 'edit_task' %}" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="task_id" id="edit_task_id">
+                <div class="modal-header">
+                    <h5 class="modal-title">Редагувати завдання</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label>Назва</label>
+                        <input type="text" name="title" id="edit_title" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label>Опис</label>
+                        <textarea name="description" id="edit_description" class="form-control" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label>Дедлайн</label>
+                        <input type="date" name="deadline" id="edit_deadline" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label>Пріоритет</label>
+                        <select name="priority" id="edit_priority" class="form-select">
+                            <option value="Low">Low</option>
+                            <option value="Average">Average</option>
+                            <option value="High">High</option>
+                            <option value="Extreme">Extreme</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Зберегти</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

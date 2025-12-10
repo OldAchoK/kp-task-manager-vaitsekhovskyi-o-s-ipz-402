@@ -1,0 +1,21 @@
+<div class="modal fade" id="createUnderTaskModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="{% url 'create_undertask' %}" method="POST">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title">Нове підзавдання</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <label>До завдання ID:</label>
+                    <input type="number" name="parent_task_id" id="ut_parent_id" class="form-control mb-3" readonly>
+                    {{ forms.undertask.as_p }}
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-info">Створити</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

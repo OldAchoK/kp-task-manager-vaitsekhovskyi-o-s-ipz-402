@@ -1,0 +1,57 @@
+<div class="modal fade" id="editEventModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form action="{% url 'edit_event' %}" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="event_id" id="edit_event_id">
+                <div class="modal-header">
+                    <h5 class="modal-title">Редагувати захід</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label">Тема</label>
+                            <input type="text" name="theme" id="edit_event_theme" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label">Опис</label>
+                            <textarea name="description" id="edit_event_description" class="form-control" rows="3"
+                                      required></textarea>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Пріоритет</label>
+                            <select name="priority" id="edit_event_priority" class="form-select" required>
+                                <option value="Extreme">Extreme</option>
+                                <option value="High">High</option>
+                                <option value="Average">Average</option>
+                                <option value="Low">Low</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Дата і час</label>
+                            <input type="datetime-local" name="date" id="edit_event_date" class="form-control" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Тривалість</label>
+                            <input type="text" name="duration" id="edit_event_duration" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label">Посилання</label>
+                            <input type="url" name="link" id="edit_event_link" class="form-control">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Зберегти зміни</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,176 @@
+﻿<div class="card task-card mb-2 shadow-sm" id="task-{{ task.taskid }}" draggable="true" ondragstart="drag(event)">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+            <h6 class="card-title mb-0" style="cursor: pointer;" onclick="toggleTaskDetails({{ task.taskid }})">
+                <i class="bi bi-caret-right-fill" id="caret-{{ task.taskid }}"></i>
+                {{ task.title }}
+            </h6>
+            <span class="badge bg-danger">{{ task.priority }}</span>
+        </div>
+        <p class="card-text small text-muted mb-2">{{ task.description|truncatewords:10 }}</p>
+        {% if task.project %}
+        <p class="small mb-1"><i class="bi bi-folder"></i> {{ task.project.title }}</p>
+        {% endif %}
+        {% if task.resultlink %}
+        <p class="small mb-1">
+            <i class="bi bi-link-45deg"></i>
+            <a href="{{ task.resultlink }}" target="_blank">Результат роботи</a>
+        </p>
+        {% endif %}
+        <div class="d-flex justify-content-between align-items-center">
+            <small class="text-muted"><i class="bi bi-calendar"></i> {{ task.deadline|date:"d.m.Y" }}</small>
+            <div class="btn-group btn-group-sm">
+                {% if role in 'Manager Lead Individual' %}
+                <button class="btn btn-outline-primary btn-sm"
+                        onclick="openEditModal({{ task.taskid }}, '{{ task.title|escapejs }}', '{{ task.description|escapejs }}', '{{ task.priority }}', '{{ task.deadline|date:'Y-m-d' }}')">
+                    <i class="bi bi-pencil"></i>
+                </button>
+                <button class="btn btn-outline-success btn-sm" onclick="openUnderTaskModal({{ task.taskid }})">
+                    <i class="bi bi-plus"></i>
+                </button>
+                <button class="btn btn-outline-info btn-sm" onclick="openAddExecModal({{ task.taskid }})">
+                    <i class="bi bi-person-plus"></i>
+                </button>
+                <button class="btn btn-outline-warning btn-sm" onclick="openCancelTaskModal({{ task.taskid }})">
+                    <i class="bi bi-x-circle"></i>
+                </button>
+                {% endif %}
+                {% if role == 'Lead' and task.status == 'Review' %}
+                <button class="btn btn-outline-success btn-sm" onclick="approveTask({{ task.taskid }})">
+                    <i class="bi bi-check-circle"></i>
+                </button>
+                <button class="btn btn-outline-danger btn-sm" onclick="rejectTask({{ task.taskid }})">
+                    <i class="bi bi-x-circle"></i>
+                </button>
+                {% endif %}
+                {% if role == 'Developer' and task.status != 'Done' %}
+                <button class="btn btn-outline-success btn-sm" onclick="openSubmitModal({{ task.taskid }})">
+                    <i class="bi bi-check-circle"></i>
+                </button>
+                {% endif %}
+                {% if role in 'Manager Lead' %}
+                <form action="{% url 'delete_task' %}" method="POST" style="display:inline;"
+                      onsubmit="return confirm('Видалити завдання?');">
+                    {% csrf_token %}
+                    <input type="hidden" name="task_id" value="{{ task.taskid }}">
+                    <button class="btn btn-outline-danger btn-sm"><i class="bi bi-trash"></i></button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+
+        <div id="task-details-{{ task.taskid }}" class="d-none mt-3 border-top pt-2">
+            <h6 class="small fw-bold">Підзавдання:</h6>
+            {% for ut in task.undertask_set.all %}
+            <div class="d-flex justify-content-between align-items-start mb-2 p-2 bg-light rounded">
+                <div class="flex-grow-1">
+                    <small class="fw-bold">{{ ut.title }}</small>
+                    <span class="badge badge-sm bg-secondary ms-2">{{ ut.status }}</span>
+                    {% if ut.developer %}
+                    <br><small class="text-muted">Виконавець: {{ ut.developer.name }}</small>
+                    {% endif %}
+                    {% if ut.resultlink %}
+                    <br><small><a href="{{ ut.resultlink }}" target="_blank" class="text-primary"><i
+                        class="bi bi-link"></i> Результат</a></small>
+                    {% endif %}
+                </div>
+                <div class="btn-group btn-group-sm">
+                    {% if role == 'Lead' and ut.status == 'Review' %}
+                    <button class="btn btn-sm btn-success" onclick="approveUndertask({{ ut.undertaskid }})">
+                        <i class="bi bi-check-circle"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger" onclick="rejectUndertask({{ ut.undertaskid }})">
+                        <i class="bi bi-x-circle"></i>
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+            {% empty %}
+            <small class="text-muted">Немає підзавдань</small>
+            {% endfor %}
+
+            <hr>
+            <h6 class="small fw-bold mt-2">Виконавці:</h6>
+            {% for handler in task.taskhandler_set.all %}
+            <div class="d-flex justify-content-between align-items-center mb-1 p-1">
+                <small>{{ handler.client.name }} {{ handler.client.surname }}</small>
+                {% if role in 'Manager Lead' %}
+                <form action="{% url 'remove_executor' %}" method="POST" style="display:inline;"
+                      onsubmit="return confirm('Видалити виконавця?');">
+                    {% csrf_token %}
+                    <input type="hidden" name="task_id" value="{{ task.taskid }}">
+                    <input type="hidden" name="executor_id" value="{{ handler.client.clientid }}">
+                    <button class="btn btn-sm btn-outline-danger"><i class="bi bi-x"></i></button>
+                </form>
+                {% endif %}
+            </div>
+            {% empty %}
+            <small class="text-muted">Немає виконавців</small>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<script>
+    function approveTask(id) {
+        if (confirm('Підтвердити виконання завдання?')) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '{% url "update_task" %}';
+            form.innerHTML = `
+                {% csrf_token %}
+                <input type="hidden" name="task_id" value="${id}">
+                <input type="hidden" name="status" value="Done">
+            `;
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
+
+    function rejectTask(id) {
+        const reason = prompt('Вкажіть причину відхилення:');
+        if (reason) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '{% url "reject_task" %}';
+            form.innerHTML = `
+                {% csrf_token %}
+                <input type="hidden" name="task_id" value="${id}">
+                <input type="hidden" name="reject_reason" value="${reason}">
+            `;
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
+
+    function approveUndertask(id) {
+        if (confirm('Підтвердити виконання підзавдання?')) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '{% url "update_undertask" %}';
+            form.innerHTML = `
+                {% csrf_token %}
+                <input type="hidden" name="undertask_id" value="${id}">
+                <input type="hidden" name="status" value="Done">
+            `;
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
+
+    function rejectUndertask(id) {
+        const reason = prompt('Вкажіть причину відхилення:');
+        if (reason) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '{% url "reject_undertask" %}';
+            form.innerHTML = `
+                {% csrf_token %}
+                <input type="hidden" name="undertask_id" value="${id}">
+                <input type="hidden" name="reject_reason" value="${reason}">
+            `;
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
+</script>

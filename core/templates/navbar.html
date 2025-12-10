@@ -1,0 +1,13 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+    <div class="container">
+        <a class="navbar-brand" href="{% url 'dashboard' %}"><i class="bi bi-kanban"></i> TeamSystem</a>
+        <div class="d-flex align-items-center">
+            <span class="text-light me-3"><i class="bi bi-person-circle"></i> {{ user.name }} {{ user.surname }}</span>
+            <span class="role-badge me-3">{{ role }}</span>
+            {% if role == 'Lead' %}
+            <a href="{% url 'statistics' %}" class="btn btn-outline-info btn-sm me-2"><i class="bi bi-graph-up"></i> Статистика</a>
+            {% endif %}
+            <a href="{% url 'logout' %}" class="btn btn-outline-danger btn-sm">Вихід</a>
+        </div>
+    </div>
+</nav>

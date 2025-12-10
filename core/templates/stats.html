@@ -1,0 +1,24 @@
+{% if stats %}
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white text-center">
+            <div class="card-body"><h3>{{ stats.total_tasks }}</h3>Всього завдань</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white text-center">
+            <div class="card-body"><h3>{{ stats.done }}</h3>Виконано</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-info text-white text-center">
+            <div class="card-body"><h3>{{ stats.progress }}%</h3>Прогрес</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-dark text-center">
+            <div class="card-body"><h3>{{ stats.active_projects }}</h3>Активні проекти</div>
+        </div>
+    </div>
+</div>
+{% endif %}

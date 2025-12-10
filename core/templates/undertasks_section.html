@@ -1,0 +1,33 @@
+{% if undertasks %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h5 class="mb-3"><i class="bi bi-list-task"></i> Підзавдання</h5>
+        <div class="card shadow-sm">
+            <div class="card-body">
+                {% for ut in undertasks %}
+                <div class="undertask-item">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <strong>{{ ut.title }}</strong>
+                            <span class="badge bg-secondary ms-2">{{ ut.status }}</span>
+                            <p class="small text-muted mb-1">{{ ut.description|truncatewords:15 }}</p>
+                            <small class="text-muted">
+                                Завдання: {{ ut.task.title }} |
+                                Виконавець: {{ ut.developer.name }} {{ ut.developer.surname }}
+                            </small>
+                        </div>
+                        <div>
+                            {% if role == 'Developer' and ut.developer.clientid == user.clientid and ut.status != 'Done' %}
+                            <button class="btn btn-sm btn-success" onclick="openSubmitUTModal({{ ut.undertaskid }})">
+                                <i class="bi bi-check"></i> Здати
+                            </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}

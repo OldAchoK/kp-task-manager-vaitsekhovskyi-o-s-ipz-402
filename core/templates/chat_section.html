@@ -1,0 +1,18 @@
+<h5 class="mb-3"><i class="bi bi-chat-dots-fill"></i> Робочий Чат</h5>
+<div class="chat-container d-flex flex-column">
+    {% for msg in messages_list %}
+    {% if msg.sender.clientid == user.clientid %}
+    <div class="chat-bubble chat-out">
+        <span class="chat-meta text-end">Ви → {{ msg.receiver.name }}</span>
+        <strong>{{ msg.title }}</strong><br>{{ msg.text }}
+    </div>
+    {% else %}
+    <div class="chat-bubble chat-in">
+        <span class="chat-meta">{{ msg.sender.name }} → Вам</span>
+        <strong>{{ msg.title }}</strong><br>{{ msg.text }}
+    </div>
+    {% endif %}
+    {% empty %}
+    <p class="text-muted text-center my-5">Немає повідомлень</p>
+    {% endfor %}
+</div>

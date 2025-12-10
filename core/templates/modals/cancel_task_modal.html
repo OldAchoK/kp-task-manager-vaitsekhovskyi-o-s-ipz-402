@@ -1,0 +1,29 @@
+<div class="modal fade" id="cancelTaskModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="{% url 'cancel_task' %}" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="task_id" id="cancel_task_id">
+                <div class="modal-header">
+                    <h5 class="modal-title">Скасувати завдання</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <label class="form-label">Причина скасування:</label>
+                    <textarea name="reason" class="form-control" rows="3" required
+                              placeholder="Вкажіть причину скасування завдання"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-warning">Скасувати завдання</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openCancelTaskModal(id) {
+        document.getElementById('cancel_task_id').value = id;
+        new bootstrap.Modal(document.getElementById('cancelTaskModal')).show();
+    }
+</script>

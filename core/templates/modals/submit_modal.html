@@ -1,0 +1,43 @@
+<div class="modal fade" id="submitResultModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="{% url 'submit_result' %}" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="task_id" id="submit_task_id">
+                <div class="modal-header">
+                    <h5 class="modal-title">Здати роботу</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <label>Посилання на результат:</label>
+                    <input type="url" name="result_link" class="form-control" placeholder="https://github.com/..." required>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Відправити</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="submitUTModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="{% url 'submit_undertask' %}" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="undertask_id" id="submit_ut_id">
+                <div class="modal-header">
+                    <h5 class="modal-title">Здати підзавдання</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <label>Посилання на результат:</label>
+                    <input type="url" name="result_link" class="form-control" placeholder="https://github.com/..." required>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Відправити</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

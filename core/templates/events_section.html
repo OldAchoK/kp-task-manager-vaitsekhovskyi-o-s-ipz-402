@@ -1,0 +1,76 @@
+<h5 class="mb-3"><i class="bi bi-calendar-check"></i> Заходи</h5>
+<div class="list-group">
+    {% for event in events %}
+    <div class="list-group-item">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+            <div class="flex-grow-1">
+                <div class="fw-bold">{{ event.theme }}</div>
+                <p class="mb-1">{{ event.description|truncatewords:10 }}</p>
+                {% if event.link %}
+                <a href="{{ event.link }}" target="_blank" class="small"><i class="bi bi-link-45deg"></i> Посилання</a>
+                {% endif %}
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-primary">{{ event.date|date:"d.m H:i" }}</span>
+                {% if role in 'Lead Manager' or event.author.clientid == user.clientid %}
+                <button class="btn btn-sm btn-outline-secondary"
+                        onclick="openEditEventModal({{ event.eventid }}, '{{ event.theme|escapejs }}', '{{ event.description|escapejs }}', '{{ event.priority }}', '{{ event.date|date:'Y-m-d\TH:i' }}', '{{ event.duration }}', '{{ event.link|escapejs }}')">
+                    <i class="bi bi-pencil"></i>
+                </button>
+                <button class="btn btn-sm btn-info" onclick="openEventParticipantsModal({{ event.eventid }})">
+                    <i class="bi bi-people"></i>
+                </button>
+                <form action="{% url 'delete_event' %}" method="POST" style="display:inline;"
+                      onsubmit="return confirm('Видалити захід?');">
+                    {% csrf_token %}
+                    <input type="hidden" name="event_id" value="{{ event.eventid }}">
+                    <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+        <div class="small text-muted">
+            <i class="bi bi-people-fill"></i> Учасники:
+            {% for handler in event.eventhandler_set.all %}
+            {{ handler.client.name }}{% if not forloop.last %}, {% endif %}
+            {% empty %}
+            Немає учасників
+            {% endfor %}
+        </div>
+    </div>
+    {% empty %}
+    <div class="list-group-item text-muted">Немає заходів</div>
+    {% endfor %}
+</div>
+
+<div class="modal fade" id="eventParticipantsModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Учасники заходу</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="current_event_id">
+                <div id="participants_list" class="mb-3"></div>
+
+                <hr>
+                <h6>Додати учасника</h6>
+                <form action="{% url 'add_event_participant' %}" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="event_id" id="add_part_event_id">
+                    <div class="input-group">
+                        <select name="client_id" class="form-select">
+                            {% for member in team_members %}
+                            <option value="{{ member.clientid }}">
+                                {{ member.name }} {{ member.surname }} ({{ member.role }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <button class="btn btn-primary">Додати</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

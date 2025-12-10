@@ -1,0 +1,60 @@
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <h6 class="mb-3"><i class="bi bi-funnel"></i> Фільтри</h6>
+        <div class="row g-3">
+            <div class="col-md-3">
+                <label class="form-label small">Проект</label>
+                <select id="filter_project" class="form-select form-select-sm">
+                    <option value="">Всі проекти</option>
+                    {% for project in projects %}
+                    <option value="{{ project.projectid }}"
+                        {% if request.GET.project == project.projectid|stringformat:'s' %}selected{% endif %}>
+                        {{ project.title }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <label class="form-label small">Пріоритет</label>
+                <select id="filter_priority" class="form-select form-select-sm">
+                    <option value="">Всі</option>
+                    <option value="Extreme" {% if request.GET.priority == 'Extreme' %}selected{% endif %}>Extreme</option>
+                    <option value="High" {% if request.GET.priority == 'High' %}selected{% endif %}>High</option>
+                    <option value="Average" {% if request.GET.priority == 'Average' %}selected{% endif %}>Average</option>
+                    <option value="Low" {% if request.GET.priority == 'Low' %}selected{% endif %}>Low</option>
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <label class="form-label small">Дедлайн</label>
+                <select id="filter_deadline" class="form-select form-select-sm">
+                    <option value="">Всі</option>
+                    <option value="urgent" {% if request.GET.deadline == 'urgent' %}selected{% endif %}>Терміново (3 дні)</option>
+                    <option value="soon" {% if request.GET.deadline == 'soon' %}selected{% endif %}>Скоро (тиждень)</option>
+                    <option value="later" {% if request.GET.deadline == 'later' %}selected{% endif %}>Пізніше</option>
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <label class="form-label small">Статус</label>
+                <select id="filter_status" class="form-select form-select-sm">
+                    <option value="">Всі</option>
+                    <option value="To Do" {% if request.GET.status == 'To Do' %}selected{% endif %}>To Do</option>
+                    <option value="In Progress" {% if request.GET.status == 'In Progress' %}selected{% endif %}>In Progress</option>
+                    <option value="Review" {% if request.GET.status == 'Review' %}selected{% endif %}>Review</option>
+                    <option value="Done" {% if request.GET.status == 'Done' %}selected{% endif %}>Done</option>
+                </select>
+            </div>
+
+            <div class="col-md-3 d-flex align-items-end gap-2">
+                <button onclick="applyFilters()" class="btn btn-primary btn-sm">
+                    <i class="bi bi-filter"></i> Застосувати
+                </button>
+                <button onclick="clearFilters()" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-x-circle"></i> Очистити
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

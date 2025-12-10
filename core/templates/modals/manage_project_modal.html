@@ -1,0 +1,40 @@
+<div class="modal fade" id="manageProjectModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="manageProjectTitle">Управління проектом</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <h6 class="mb-3">Прикріплені команди</h6>
+                <div class="table-responsive mb-4">
+                    <table class="table table-bordered table-sm">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Команда</th>
+                                <th style="width: 50px;">Дія</th>
+                            </tr>
+                        </thead>
+                        <tbody id="project_teams_table_body">
+                            </tbody>
+                    </table>
+                </div>
+
+                <hr>
+                <h6 class="mb-3">Прикріпити команду</h6>
+                <form action="{% url 'add_project_team' %}" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="project_id" id="add_team_project_id">
+                    <div class="input-group">
+                        <select name="team_id" class="form-select">
+                            {% for team in teams %}
+                            <option value="{{ team.teamid }}">{{ team.title }}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" class="btn btn-success">Прикріпити</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
