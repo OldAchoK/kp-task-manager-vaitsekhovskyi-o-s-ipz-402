@@ -2,11 +2,11 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Вход в систему</title>
+    <title>Вхід у систему</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            background-color: #ebebeb;
+            background-color: #f5f5f5;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -33,14 +33,14 @@
 <body>
 
     <main class="login-form text-center">
-        <h1 class="h3 mb-3 fw-normal">Team System</h1>
+        <h1 class="h3 mb-3 fw-normal">Task Manager</h1>
 
         <form method="post">
             {% csrf_token %}
 
             <div class="form-floating mb-3">
                 <input type="email" class="form-control" id="floatingInput" name="email" placeholder="name@example.com" required>
-                <label for="floatingInput">Email адрес</label>
+                <label for="floatingInput">Електрона адреса</label>
             </div>
 
             <div class="form-floating mb-3">
@@ -56,13 +56,6 @@
                 </div>
             {% endif %}
         </form>
-
-        <!-- <div class="sql-log text-start">
-            <strong>DEBUG INFO:</strong><br>
-            Подключение к БД сейчас выполняется под ролью: <br>
-            <code>connect_user</code><br>
-            <em>(Проверь консоль сервера для SQL логов)</em>
-        </div> -->
     </main>
 
 </body>

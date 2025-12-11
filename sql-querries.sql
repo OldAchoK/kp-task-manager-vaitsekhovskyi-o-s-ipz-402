@@ -1,29 +1,41 @@
-DROP SCHEMA IF EXISTS public CASCADE;
-CREATE SCHEMA public;
+DO $$
+DECLARE role_name text;
+BEGIN
+    FOR role_name IN SELECT rolname FROM pg_roles WHERE rolname LIKE 'user_%' LOOP
+        EXECUTE 'REASSIGN OWNED BY ' || quote_ident(role_name) || ' TO postgres';
+        EXECUTE 'DROP OWNED BY ' || quote_ident(role_name);
+        EXECUTE 'DROP ROLE ' || quote_ident(role_name);
+    END LOOP;
+END $$;
 
-ALTER DATABASE task_manager OWNER TO postgres;
-
-REVOKE ALL PRIVILEGES ON DATABASE task_manager FROM "connect_user", "Individual", "Developer", "Manager", "Lead";
-REVOKE ALL PRIVILEGES ON SCHEMA public FROM "connect_user", "Individual", "Developer", "Manager", "Lead";
 REVOKE ALL PRIVILEGES ON ALL TABLES IN SCHEMA public FROM "connect_user", "Individual", "Developer", "Manager", "Lead";
 REVOKE ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public FROM "connect_user", "Individual", "Developer", "Manager", "Lead";
+REVOKE ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA public FROM "connect_user", "Individual", "Developer", "Manager", "Lead";
+REVOKE ALL PRIVILEGES ON SCHEMA public FROM "connect_user", "Individual", "Developer", "Manager", "Lead";
+REVOKE ALL PRIVILEGES ON DATABASE team_db_name FROM "connect_user", "Individual", "Developer", "Manager", "Lead";
 
--- DROP TABLE IF EXISTS MediaLink CASCADE;
--- DROP TABLE IF EXISTS EventHandler CASCADE;
--- DROP TABLE IF EXISTS Event CASCADE;
--- DROP TABLE IF EXISTS Message CASCADE;
--- DROP TABLE IF EXISTS UnderTask CASCADE;
--- DROP TABLE IF EXISTS TaskHandler CASCADE;
--- DROP TABLE IF EXISTS Task CASCADE;
--- DROP TABLE IF EXISTS ProjectHandler CASCADE;
--- DROP TABLE IF EXISTS Project CASCADE;
--- DROP TABLE IF EXISTS TeamHandler CASCADE;
--- DROP TABLE IF EXISTS Team CASCADE;
--- DROP TABLE IF EXISTS Client CASCADE;
--- DROP TABLE IF EXISTS django_session CASCADE;
+DROP OWNED BY "connect_user";
+DROP OWNED BY "Individual";
+DROP OWNED BY "Developer";
+DROP OWNED BY "Manager";
+DROP OWNED BY "Lead";
 
--- DROP DOMAIN IF EXISTS PriorityDomain CASCADE;
--- DROP DOMAIN IF EXISTS StatusDomain CASCADE;
+DROP TABLE IF EXISTS MediaLink CASCADE;
+DROP TABLE IF EXISTS EventHandler CASCADE;
+DROP TABLE IF EXISTS Event CASCADE;
+DROP TABLE IF EXISTS Message CASCADE;
+DROP TABLE IF EXISTS UnderTask CASCADE;
+DROP TABLE IF EXISTS TaskHandler CASCADE;
+DROP TABLE IF EXISTS Task CASCADE;
+DROP TABLE IF EXISTS ProjectHandler CASCADE;
+DROP TABLE IF EXISTS Project CASCADE;
+DROP TABLE IF EXISTS TeamHandler CASCADE;
+DROP TABLE IF EXISTS Team CASCADE;
+DROP TABLE IF EXISTS Client CASCADE;
+DROP TABLE IF EXISTS django_session CASCADE;
+
+DROP DOMAIN IF EXISTS PriorityDomain CASCADE;
+DROP DOMAIN IF EXISTS StatusDomain CASCADE;
 
 DROP ROLE IF EXISTS "connect_user";
 DROP ROLE IF EXISTS "Individual";
@@ -32,17 +44,6 @@ DROP ROLE IF EXISTS "Manager";
 DROP ROLE IF EXISTS "Lead";
 
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
-
-DROP USER IF EXISTS django_owner;
-CREATE USER django_owner WITH PASSWORD 'django';
-ALTER DATABASE task_manager OWNER TO django_owner;
-GRANT ALL ON SCHEMA public TO django_owner;
-GRANT CREATE ON SCHEMA public TO django_owner;
-GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO django_owner;
-GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO django_owner;
-ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO django_owner;
-ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO django_owner;
-ALTER ROLE django_owner CONNECTION LIMIT 20;
 
 CREATE DOMAIN PriorityDomain AS CHAR(7) CHECK(VALUE IN('Extreme','High','Average','Low'));
 CREATE DOMAIN StatusDomain AS VARCHAR(20) CHECK(VALUE IN('To Do', 'In Progress', 'Review', 'Done', 'Canceled'));
@@ -59,7 +60,6 @@ CREATE TABLE Client (
     Name VARCHAR(30) NOT NULL,
     Surname VARCHAR(30) NOT NULL,
     Email VARCHAR(64) UNIQUE NOT NULL,
-    Password VARCHAR(255) NOT NULL,
     Avatar VARCHAR(2048) DEFAULT 'idle.png' NOT NULL,
     Role VARCHAR(30) CHECK(Role IN ('No Commerce', 'Developer', 'Manager', 'Lead', 'Individual')) NOT NULL
 );
@@ -163,22 +163,43 @@ CREATE TABLE MediaLink (
 );
 
 CREATE ROLE "connect_user" WITH LOGIN PASSWORD 'connect_pass';
+ALTER ROLE "connect_user" CREATEROLE;
+
 CREATE ROLE "Individual" NOLOGIN;
 CREATE ROLE "Developer" NOLOGIN;
 CREATE ROLE "Manager" NOLOGIN;
 CREATE ROLE "Lead" NOLOGIN;
 
-GRANT "Individual", "Developer", "Manager", "Lead", "connect_user" TO postgres;
+GRANT "Individual", "Developer", "Manager", "Lead" TO "connect_user" WITH ADMIN OPTION;
 
-GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO "connect_user", "Individual", "Developer", "Manager", "Lead";
-GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO "connect_user", "Individual", "Developer", "Manager", "Lead";
+GRANT ALL ON SCHEMA public TO "connect_user";
+GRANT ALL ON ALL TABLES IN SCHEMA public TO "connect_user";
+GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO "connect_user";
 
-INSERT INTO Client (Name, Surname, Email, Password, Role) VALUES
-('Ivan', 'Sadikov', 'dev@test.com', 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', 'Developer'),
-('Petr', 'Samuraj', 'man@test.com', 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', 'Manager'),
-('Olga', 'Levanskaya', 'lead@test.com', 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', 'Lead'),
-('Alex', 'Katsyrberg', 'client@test.com', 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', 'Individual'),
-('Mark', 'Newbie', 'mark@test.com', 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', 'Developer');
+GRANT ALL ON ALL TABLES IN SCHEMA public TO "Individual", "Developer", "Manager", "Lead";
+GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO "Individual", "Developer", "Manager", "Lead";
+
+INSERT INTO Client (Name, Surname, Email, Role) VALUES
+('Ivan', 'Sadikov', 'dev@test.com', 'Developer'),
+('Petr', 'Samuraj', 'man@test.com', 'Manager'),
+('Olga', 'Levanskaya', 'lead@test.com', 'Lead'),
+('Alex', 'Katsyrberg', 'client@test.com', 'Individual'),
+('Mark', 'Newbie', 'mark@test.com', 'Developer');
+
+CREATE ROLE "user_1" WITH LOGIN PASSWORD '123' IN ROLE "Developer";
+GRANT "user_1" TO "connect_user";
+
+CREATE ROLE "user_2" WITH LOGIN PASSWORD '123' IN ROLE "Manager";
+GRANT "user_2" TO "connect_user";
+
+CREATE ROLE "user_3" WITH LOGIN PASSWORD '123' IN ROLE "Lead";
+GRANT "user_3" TO "connect_user";
+
+CREATE ROLE "user_4" WITH LOGIN PASSWORD '123' IN ROLE "Individual";
+GRANT "user_4" TO "connect_user";
+
+CREATE ROLE "user_5" WITH LOGIN PASSWORD '123' IN ROLE "Developer";
+GRANT "user_5" TO "connect_user";
 
 INSERT INTO Project (Title, Status, Deadline) VALUES
 ('Website Redesign', 'In Progress', '2025-12-31'),
@@ -209,3 +230,4 @@ INSERT INTO Event (Priority, AuthorId, Theme, Description, Date, Duration) VALUE
 INSERT INTO EventHandler (EventId, ClientId) VALUES
 (1, 1), (1, 2), (1, 3), (1, 5),
 (2, 1), (2, 5);
+

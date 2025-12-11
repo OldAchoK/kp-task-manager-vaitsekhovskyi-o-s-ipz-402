@@ -9,18 +9,17 @@
                 {% endif %}
 
                 {% if role == 'Lead' %}
-                <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                <!-- <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#addUserModal">
                     <i class="bi bi-person-plus-fill"></i> Додати користувача
-                </button>
-                {% endif %}
-
-                {% if role in 'Lead Manager' %}
+                </button> -->
                 <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#createTeamModal">
                     <i class="bi bi-people"></i> Створити команду
                 </button>
                 <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#createProjectModal">
                     <i class="bi bi-folder-plus"></i> Створити проект
                 </button>
+                {% endif %}
+                {% if role in 'Lead Manager' %}
                 <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#createEventModal">
                     <i class="bi bi-calendar-event"></i> Створити захід
                 </button>

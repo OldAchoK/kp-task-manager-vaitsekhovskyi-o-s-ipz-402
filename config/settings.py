@@ -88,7 +88,7 @@ DATABASES = {
     }
 }
 
-# Raise connection error if missing file 
+# Raise connection error if missing file
 required_db_vars = ['DB_NAME', 'DB_USER', 'DB_PASSWORD']
 missing_vars = [var for var in required_db_vars if not os.getenv(var)]
 if missing_vars:
